@@ -61,7 +61,7 @@ func DefaultConfig() Config {
 		Agent: AgentConfig{
 			Endpoint:    "http://localhost:8080/chat/completions",
 			Timeout:     Duration(30 * time.Second),
-			Model:       "custom-model",
+			Model:       "mock-llm",
 			Temperature: 0.7,
 			MaxTokens:   1000,
 		},

@@ -2,7 +2,7 @@
   "agent": {
     "endpoint": "http://localhost:8080/chat/completions",
     "timeout": "30s",
-    "model": "custom-model",
+    "model": "mock-llm",
     "temperature": 0.7,
     "max_tokens": 1000
   },

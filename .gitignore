@@ -2,6 +2,10 @@
 pedals
 pedals.exe
 pedals-*
+mock-llm
+mock-llm.exe
+verify
+verify.exe
 *.exe
 *.dll
 *.so

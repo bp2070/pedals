@@ -14,7 +14,7 @@ test:
 
 # Clean build artifacts
 clean:
-	rm -f pedals pedals.exe pedals-* verify
+	rm -f pedals pedals.exe pedals-* verify verify.exe mock-llm mock-llm.exe
 	rm -rf dist/
 
 # Verify compilation
@@ -43,3 +43,22 @@ deps:
 dev:
 	@echo "Starting development..."
 	@echo "Run './pedals' to start the TUI"
+
+# Mock LLM server for testing
+build-mock:
+	go build -o mock-llm ./cmd/mock-llm
+
+run-mock: build-mock
+	./mock-llm
+
+run-mock-detached: build-mock
+	@echo "Starting mock LLM server on port 8080 (detached)..."
+	@./mock-llm &
+
+# Test with mock server
+test-with-mock: build build-mock
+	@echo "Starting mock LLM server..."
+	@./mock-llm &
+	@sleep 2
+	@echo "Starting TUI application..."
+	@./pedals

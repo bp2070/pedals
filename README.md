@@ -36,7 +36,7 @@ Create a `config.json` file in the same directory as the binary:
   "agent": {
     "endpoint": "http://localhost:8080/chat/completions",
     "timeout": "30s",
-    "model": "custom-model",
+    "model": "mock-llm",
     "temperature": 0.7,
     "max_tokens": 1000
   },
@@ -46,6 +46,8 @@ Create a `config.json` file in the same directory as the binary:
   }
 }
 ```
+
+**Note**: This default configuration points to the mock LLM server running on port 8080. Update the endpoint to point to your actual AI agent.
 
 ## Usage
 
@@ -73,20 +75,25 @@ The status bar at the bottom shows:
 
 ```
 pedals/
-├── cmd/pedals/main.go          # Application entry point
+├── cmd/
+│   ├── pedals/
+│   │   └── main.go           # Main TUI application
+│   └── mock-llm/
+│       └── main.go           # Mock LLM server for testing
 ├── internal/
-│   ├── agent/                  # Agent control logic
-│   │   ├── agent.go           # Agent interface and types
-│   │   └── client.go          # HTTP client implementation
-│   ├── tui/                   # TUI components
-│   │   ├── model.go           # Bubble Tea model
-│   │   ├── styles.go          # UI styling
-│   │   └── views/             # UI components (future)
-│   └── config/                # Configuration
-│       └── config.go          # Config loading/parsing
-├── config.json                # Example configuration
-├── go.mod                     # Go module definition
-└── README.md                  # This file
+│   ├── agent/                # Agent control logic
+│   │   ├── agent.go         # Agent interface and types
+│   │   └── client.go        # HTTP client implementation
+│   ├── tui/                 # TUI components
+│   │   ├── model.go         # Bubble Tea model
+│   │   ├── styles.go        # UI styling
+│   │   └── views/           # UI components (future)
+│   └── config/              # Configuration
+│       └── config.go        # Config loading/parsing
+├── config.json              # Example configuration
+├── go.mod                   # Go module definition
+├── Makefile                 # Build automation
+└── README.md                # This file
 ```
 
 ## Development
@@ -108,8 +115,34 @@ go test ./...
 
 # Build for different platforms
 GOOS=linux GOARCH=amd64 go build -o pedals-linux ./cmd/pedals
-GOOS=darwin GOARCH=arm64 go build -o pedals-macos ./cmd/pedals
+GOOS=darwin GOARCH=amd64 go build -o pedals-macos ./cmd/pedals
 GOOS=windows GOARCH=amd64 go build -o pedals.exe ./cmd/pedals
+```
+
+### Testing with Mock Server
+A mock LLM server is included for testing without a real AI agent:
+
+```bash
+# Build and run the mock server
+go build -o mock-llm ./cmd/mock-llm
+./mock-llm
+```
+
+Or use the Makefile:
+```bash
+make build-mock    # Build mock server
+make run-mock      # Run mock server
+```
+
+The mock server runs on port 8080 by default and provides several behaviors:
+- `--port=8080`: Change port (default: 8080)
+- `--delay=500`: Add artificial delay in milliseconds
+- `--behavior=echo`: Response behavior (echo, fixed, random)
+- `--log=false`: Disable request logging
+
+Example with custom settings:
+```bash
+./mock-llm --port=9090 --delay=1000 --behavior=random
 ```
 
 ## API Compatibility
