@@ -1,0 +1,42 @@
+# Binaries
+pedals
+pedals.exe
+pedals-*
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Development artifacts
+dist/
+build/
+out/
+
+# Go artifacts
+*.test
+*.out
+coverage.html
+profile.out
+
+# Dependency directories
+vendor/
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Config overrides
+config.local.json
+.env

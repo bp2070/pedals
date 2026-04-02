@@ -1,0 +1,13 @@
+{
+  "agent": {
+    "endpoint": "http://localhost:8080/chat/completions",
+    "timeout": "30s",
+    "model": "custom-model",
+    "temperature": 0.7,
+    "max_tokens": 1000
+  },
+  "ui": {
+    "show_help_on_start": true,
+    "message_history": 100
+  }
+}
