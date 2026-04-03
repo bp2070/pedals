@@ -30,8 +30,6 @@ type Model struct {
 	
 	// State
 	ready       bool
-	width       int
-	height      int
 	quitting    bool
 	loading     bool
 	messages    []agent.Message
@@ -96,8 +94,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.ready {
 			m.ready = true
 		}
-		m.width = msg.Width
-		m.height = msg.Height
 		m.viewport.Width = msg.Width
 		m.viewport.Height = msg.Height - 4 // Reserve space for input and status
 		m.textInput.Width = msg.Width - 10
@@ -248,7 +244,8 @@ func (m *Model) buildStatusBar() string {
 	
 	statusText += fmt.Sprintf(" | Endpoint: %s", m.status.Endpoint)
 	statusText += fmt.Sprintf(" | Model: %s", m.status.Model)
-	statusText += fmt.Sprintf(" | Calls: %d/%d", m.status.TotalCalls, m.status.FailedCalls)
+	successCalls := m.status.TotalCalls - m.status.FailedCalls
+	statusText += fmt.Sprintf(" | Success: %d | Failed: %d", successCalls, m.status.FailedCalls)
 	
 	if m.loading {
 		statusText += " | " + m.spinner.View() + " Processing..."

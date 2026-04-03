@@ -7,40 +7,9 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"pedals/internal/agent"
 	"time"
 )
-
-type ChatRequest struct {
-	Model       string     `json:"model"`
-	Messages    []Message  `json:"messages"`
-	Temperature float64    `json:"temperature,omitempty"`
-	MaxTokens   int        `json:"max_tokens,omitempty"`
-	Stream      bool       `json:"stream,omitempty"`
-}
-
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type ChatResponse struct {
-	ID      string   `json:"id"`
-	Model   string   `json:"model"`
-	Choices []Choice `json:"choices"`
-	Usage   Usage    `json:"usage"`
-}
-
-type Choice struct {
-	Index        int     `json:"index"`
-	Message      Message `json:"message"`
-	FinishReason string  `json:"finish_reason"`
-}
-
-type Usage struct {
-	PromptTokens     int `json:"prompt_tokens"`
-	CompletionTokens int `json:"completion_tokens"`
-	TotalTokens      int `json:"total_tokens"`
-}
 
 var (
 	port     = flag.Int("port", 8080, "Port to listen on")
@@ -51,9 +20,7 @@ var (
 
 func main() {
 	flag.Parse()
-	
-	rand.Seed(time.Now().UnixNano())
-	
+
 	http.HandleFunc("/chat/completions", chatHandler)
 	http.HandleFunc("/health", healthHandler)
 	
@@ -90,12 +57,12 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	// Parse request
-	var req ChatRequest
+	var req agent.ChatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
 		return
 	}
-	
+
 	// Log request if enabled
 	if *logReqs {
 		log.Printf("[REQUEST] Model: %s, Messages: %d, Temp: %.2f", 
@@ -108,34 +75,34 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("  [%d] %s: %s", i, msg.Role, content)
 		}
 	}
-	
+
 	// Artificial delay
 	if *delay > 0 {
 		time.Sleep(time.Duration(*delay) * time.Millisecond)
 	}
-	
+
 	// Generate response based on behavior
 	response := generateResponse(req)
-	
+
 	// Calculate token usage (rough approximation)
 	promptTokens := estimateTokens(req.Messages)
-	completionTokens := estimateTokens([]Message{{Content: response}})
-	
+	completionTokens := estimateTokens([]agent.Message{{Content: response}})
+
 	// Build response
-	resp := ChatResponse{
+	resp := agent.ChatResponse{
 		ID:    fmt.Sprintf("chatcmpl-%d", time.Now().UnixNano()),
 		Model: req.Model,
-		Choices: []Choice{
+		Choices: []agent.Choice{
 			{
 				Index: 0,
-				Message: Message{
+				Message: agent.Message{
 					Role:    "assistant",
 					Content: response,
 				},
 				FinishReason: "stop",
 			},
 		},
-		Usage: Usage{
+		Usage: agent.Usage{
 			PromptTokens:     promptTokens,
 			CompletionTokens: completionTokens,
 			TotalTokens:      promptTokens + completionTokens,
@@ -157,7 +124,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func generateResponse(req ChatRequest) string {
+func generateResponse(req agent.ChatRequest) string {
 	if len(req.Messages) == 0 {
 		return "I received an empty message. How can I help you?"
 	}
@@ -183,7 +150,7 @@ func generateResponse(req ChatRequest) string {
 	}
 }
 
-func estimateTokens(messages []Message) int {
+func estimateTokens(messages []agent.Message) int {
 	// Rough approximation: 1 token ≈ 4 characters for English
 	totalChars := 0
 	for _, msg := range messages {

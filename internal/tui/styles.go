@@ -48,8 +48,7 @@ func DefaultStyles() *Styles {
 		StatusBarStyle: lipgloss.NewStyle().
 			Foreground(lipgloss.Color("15")).
 			Background(secondaryColor).
-			Padding(0, 1).
-			Width(80),
+			Padding(0, 1),
 		
 		ConnectedStyle: lipgloss.NewStyle().
 			Foreground(successColor).
