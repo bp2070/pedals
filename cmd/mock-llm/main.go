@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	port     = flag.Int("port", 8080, "Port to listen on")
+	port     = flag.Int("port", 8090, "Port to listen on")
 	delay    = flag.Int("delay", 0, "Artificial delay in milliseconds")
 	behavior = flag.String("behavior", "echo", "Response behavior: echo, fixed, random")
 	logReqs  = flag.Bool("log", true, "Log requests")

@@ -121,8 +121,8 @@ func TestDuration_ToDuration(t *testing.T) {
 func TestDefaultConfig(t *testing.T) {
 	cfg := DefaultConfig()
 
-	if cfg.Agent.Endpoint != "http://localhost:8080/chat/completions" {
-		t.Errorf("DefaultConfig().Agent.Endpoint = %v, want http://localhost:8080/chat/completions", cfg.Agent.Endpoint)
+	if cfg.Agent.Endpoint != "http://localhost:8090/chat/completions" {
+		t.Errorf("DefaultConfig().Agent.Endpoint = %v, want http://localhost:8090/chat/completions", cfg.Agent.Endpoint)
 	}
 	if cfg.Agent.Timeout.ToDuration() != 30*time.Second {
 		t.Errorf("DefaultConfig().Agent.Timeout = %v, want 30s", cfg.Agent.Timeout)
@@ -150,7 +150,7 @@ func TestLoadConfig_FileNotFound(t *testing.T) {
 	if err != nil {
 		t.Errorf("LoadConfig() error = %v, want nil", err)
 	}
-	if cfg.Agent.Endpoint != "http://localhost:8080/chat/completions" {
+	if cfg.Agent.Endpoint != "http://localhost:8090/chat/completions" {
 		t.Errorf("LoadConfig() returned non-default config when file doesn't exist")
 	}
 }

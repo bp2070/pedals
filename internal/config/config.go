@@ -59,7 +59,7 @@ type UIConfig struct {
 func DefaultConfig() Config {
 	return Config{
 		Agent: AgentConfig{
-			Endpoint:    "http://localhost:8080/chat/completions",
+			Endpoint:    "http://localhost:8090/chat/completions",
 			Timeout:     Duration(30 * time.Second),
 			Model:       "mock-llm",
 			Temperature: 0.7,
