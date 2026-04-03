@@ -92,7 +92,7 @@ pedals/
 │       └── config.go        # Config loading/parsing
 ├── config.json              # Example configuration
 ├── go.mod                   # Go module definition
-├── Makefile                 # Build automation
+├── Taskfile.yml            # Build automation
 └── README.md                # This file
 ```
 
@@ -128,10 +128,10 @@ go build -o mock-llm ./cmd/mock-llm
 ./mock-llm
 ```
 
-Or use the Makefile:
+Or use the Taskfile:
 ```bash
-make build-mock    # Build mock server
-make run-mock      # Run mock server
+task build-mock    # Build mock server
+task run-mock      # Run mock server
 ```
 
 The mock server runs on port 8080 by default and provides several behaviors:

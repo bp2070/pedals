@@ -1,0 +1,106 @@
+version: '3'
+
+default: help
+
+tasks:
+  help:
+    desc: Show this help
+    cmds:
+      - echo 'Available tasks:'
+      - echo '  task build     - Build the application'
+      - echo '  task run       - Run the application'
+      - echo '  task test      - Run tests'
+      - echo '  task clean     - Clean build artifacts'
+      - echo '  task verify    - Verify compilation'
+      - echo '  task build-all - Build for multiple platforms'
+      - echo '  task deps      - Install dependencies'
+      - echo '  task dev       - Development server (example)'
+      - echo '  task build-mock - Build mock LLM server'
+      - echo '  task run-mock  - Run mock LLM server'
+      - echo '  For more tasks, run "task --list"'
+  build:
+    desc: Build the application
+    cmds:
+      - go build -o pedals ./cmd/pedals
+
+  run:
+    desc: Run the application
+    deps: [build]
+    cmds:
+      - ./pedals
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -f pedals pedals.exe pedals-* verify verify.exe mock-llm mock-llm.exe
+      - rm -rf dist/
+
+  verify:
+    desc: Verify compilation
+    cmds:
+      - go run verify.go
+
+  build-all:
+    desc: Build for multiple platforms
+    deps: [build-linux, build-macos, build-windows]
+
+  build-linux:
+    desc: Build for Linux
+    cmds:
+      - GOOS=linux GOARCH=amd64 go build -o dist/pedals-linux-amd64 ./cmd/pedals
+
+  build-macos:
+    desc: Build for macOS (both arm64 and amd64)
+    cmds:
+      - GOOS=darwin GOARCH=arm64 go build -o dist/pedals-darwin-arm64 ./cmd/pedals
+      - GOOS=darwin GOARCH=amd64 go build -o dist/pedals-darwin-amd64 ./cmd/pedals
+
+  build-windows:
+    desc: Build for Windows
+    cmds:
+      - GOOS=windows GOARCH=amd64 go build -o dist/pedals-windows-amd64.exe ./cmd/pedals
+
+  deps:
+    desc: Install dependencies
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  dev:
+    desc: Development server (example)
+    cmds:
+      - echo "Starting development..."
+      - echo "Run './pedals' to start the TUI"
+
+  build-mock:
+    desc: Build mock LLM server
+    cmds:
+      - go build -o mock-llm ./cmd/mock-llm
+
+  run-mock:
+    desc: Run mock LLM server
+    deps: [build-mock]
+    cmds:
+      - ./mock-llm
+
+  run-mock-detached:
+    desc: Run mock LLM server in background
+    deps: [build-mock]
+    cmds:
+      - echo "Starting mock LLM server on port 8080 (detached)..."
+      - ./mock-llm &
+
+  test-with-mock:
+    desc: Test with mock server
+    deps: [build, build-mock]
+    cmds:
+      - echo "Starting mock LLM server..."
+      - ./mock-llm &
+      - sleep 2
+      - echo "Starting TUI application..."
+      - ./pedals
